@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="initial-scale=1, width=device-width" http-equiv="Content-Type" content="text/html, charset=utf-8" />
+    <title>İstatistik Hesaplama Hümeyra Karakılınç</title>
+</head>
+<body style="font-family: Arial, sans-serif;margin: 10px; font-size: 12px;text-align:center;">
+<div style="border: 3px solid darkblue;  background:white;width: 100%; field-sizing: content;border-radius: 0.75em;">
+    <h3>Merkezi Eğilim ve Dağılım<br>Ölçüleri Hesaplayıcısı</h3>
+    <p style="color:darkblue;">Ondalık ayracı olarak nokta kullanılmalıdır.
+        Sayıları virgül, noktalı virgül, boşluk veya alt satır ile ayırınız.</p>
+    <h3>Veri Girişi</h3>
+    <textarea id="dataInput" style="width: 290px; min-height: 60px;field-sizing: content;border-radius: 0.65em; resize:none;" placeholder="Ondalık ayracı nokta kullanılmalıdır. Veri değerlerini virgül, noktalı virgül, boşluk veya alt satır ile ayırarak giriniz"></textarea>
+    <br>
+    <button style="  font-size: 14px; color:green;border-radius: 0.65em;" onclick=" if (document.getElementById('dataInput').value!='' || silinenSonveri!='') { document.getElementById('dataInput').value=silinenSonveri;}">&#8630; &nbsp;Geri Al </button>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <button style="  font-size: 14px; color:red;border-radius: 0.65em;" onclick="if (document.getElementById('dataInput').value!='')silinenSonveri=document.getElementById('dataInput').value; document.getElementById('dataInput').value=''; document.getElementById('resultOutput').value=' ';">Veri Sil&nbsp;&#10008;</button>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <button style=" font-size: 14px; color:blue; font-weight:600;border-radius: 0.65em;" onclick="hesapla();  silinenSonveri=document.getElementById('dataInput').value;">Hesapla&nbsp; &#10004;</button>
+    <br><br>
+    <textarea id="resultOutput" style="width: 290px; margin-bottom: 10px; field-sizing: content; border-radius: 0.65em; resize:none;" readonly></textarea>
+</div>
+<script>
+
+    var silinenSonveri='';
+
+    // Veriyi temizler, sayılara çevirir ve dizi formatına getirir
+    function veriTemizleme() {
+        let input = document.getElementById("dataInput").value;
+        input= input.trim();
+        input= input.replace(/\s/g,',');
+        input= input.replace(/;/g,',');
+        let i;
+        for ( i = 0; i < 10; i++)
+            input=input.replace(/,,/g,',');
+        if ( input.charAt(input.length-1)==',')
+            input=input.slice(0,input.length-1);
+        if ( input.charAt(0)==',')
+            input=input.slice(1,input.length);
+        let numbers = input.split(/,/).map(Number).filter(n => !isNaN(n));
+        if (numbers.length === 0 || input==='') {
+            document.getElementById("resultOutput").value ="Lütfen sayıları giriniz.";
+            return;
+        }
+        // Dizi değerlerini küçükten büyüğe sıralar
+        numbers.sort((a, b) => a-b);
+        return numbers;
+     }
+
+    // Aritmetik ortalama hesaplar
+    function ortalamaf(numbers){
+        let i, ortalama=0.0;
+        let n=numbers.length;
+        for (i=0;i<n;i++)
+            ortalama += numbers[i]/n;
+        return ortalama;
+    }
+
+    // Medyan (ortanca) değeri hesaplar
+    function medyanf(numbers){
+        let n=numbers.length;
+        if (n % 2 === 0)
+            return((numbers[n/2 - 1] + numbers[n/2]) / 2);
+        else
+            return(numbers[Math.floor(n/2)]);
+    }
+
+    // Mod (en sık) değeri hesaplar
+    function modf(numbers){
+        let mod=[];
+        mod.length=0;
+        let i,j, frekans=[];
+        let say=0;
+        let n=numbers.length;
+        frekans.length=0;
+        for (i=0;i<n;i++){
+            for (j=0;j<n;j++){
+                if(numbers[i]==numbers[j] && numbers[i]!=numbers[i+1]) say++;
+            }
+
+            if(say)frekans.push([numbers[i],say]);
+            say=0;
+        }
+        frekans.sort((a, b) => a[1]-b[1]);
+        n=frekans.length;
+        let maxFrekans=frekans[frekans.length-1][1];
+        for (i=0;i<n;i++){
+            if(maxFrekans==frekans[i][1]) mod.push(frekans[i][0]);
+        }
+        return(mod);
+    }
+
+    // Aralık (range) değeri hesaplar
+    function aralikf(numbers){
+        let n=numbers.length;
+        return(numbers[n-1] - numbers[0]);
+    }
+
+    // Dördebölenler aralığı değeri hesaplar
+    function DBf(numbers){
+        let n=numbers.length;
+        let altDBpozisyonu=(n+1)/4;
+        let ustDBpozisyonu=3*(n+1)/4;
+        let db123=[];
+        db123.length=0;
+        let altDBvalue=numbers[Math.floor(altDBpozisyonu)-1]
+                        +((numbers[Math.ceil(altDBpozisyonu)-1]-numbers[Math.floor(altDBpozisyonu)-1])
+                        *(altDBpozisyonu-Math.floor(altDBpozisyonu)));
+        db123.push(altDBvalue);
+        let ustDBvalue=numbers[Math.floor(ustDBpozisyonu)-1]
+                        +((numbers[Math.ceil(ustDBpozisyonu)-1]-numbers[Math.floor(ustDBpozisyonu)-1])
+                        *(ustDBpozisyonu-Math.floor(ustDBpozisyonu)));
+        db123.push(ustDBvalue);
+        db123.push(ustDBvalue-altDBvalue);
+        return(db123);
+    }
+
+    // Ortalama Mutlak Sapma hesaplar
+    function omsapmaf(numbers, ortalama){
+        let i, omsapma=0.0;
+        let n=numbers.length;
+        for (i=0;i<n;i++)
+            omsapma += Math.abs(numbers[i]-ortalama)/n;
+        return omsapma;
+    }
+
+    // Varyans hesaplar
+    // tercih=1 anakütle için, tercih=0 örneklem için
+    function varyansf(numbers, ortalama, tercih){
+        let i, varyans=0.0;
+        let n=numbers.length;
+        for (i=0;i<n;i++){
+            if(tercih)
+                varyans += (numbers[i]-ortalama)*(numbers[i]-ortalama)/n;
+            else
+                varyans += (numbers[i]-ortalama)*(numbers[i]-ortalama)/(n-1);
+        }
+        return varyans;
+    }
+
+    // Basit serinin Merkezi Eğilim ve Dağılım Ölçülerini hesaplar
+    function hesapla() {
+        let veriDizisi=veriTemizleme();
+        let N=veriDizisi.length;
+        let ortalama = ortalamaf(veriDizisi);
+        let medyan = medyanf(veriDizisi);
+        let mod=modf(veriDizisi);
+        let aralik=aralikf(veriDizisi);
+        let dordebolenler=DBf(veriDizisi);
+        let OMS=omsapmaf(veriDizisi, ortalama);
+        let varyansAnakutle=varyansf(veriDizisi, ortalama, 1);
+        let varyansOrneklem=varyansf(veriDizisi, ortalama, 0);
+        let result ="";
+
+        result  +="Veri sayısı (N): " + N + "\n\n";
+        result += "Merkezi Eğilim Ölçüleri\n";
+        result += "----------------------\n";
+        result +="Aritmetik Ortalama (µ) (X̄) : " + ortalama.toFixed(4) + "\n";
+        result +="Medyan: " + medyan + "\n";
+
+        if(mod.length==veriDizisi.length && veriDizisi.length>1)
+            result +="Mod yoktur.\n";
+        else
+            result +=mod.length+" tane Mod var: " + mod + "\n";
+
+        result += "\nDağılım (Değişkenlik) Ölçüleri\n";
+        result +=     "----------------------\n";
+        result +="Minimum Değer: " + veriDizisi[0] + "\n";
+        result +="Maksimum Değer: " + veriDizisi[veriDizisi.length-1] + "\n";
+        result +="Aralık: " + aralik + "\n\n";
+        result +="Alt DB Değeri: " + dordebolenler[0]  + "\n";
+        result +="Üst DB Değeri: " + dordebolenler[1] + "\n";
+        result +="Dördebölenler Aralığı: " + dordebolenler[2]+ "\n\n";
+        result +="Ortalama Mutlak Sapma (OMS): " + OMS.toFixed(4) + "\n\n";
+        result +="Anakütle Varyansı (σ²): " + varyansAnakutle.toFixed(4)  + "\n";
+        result +="Anakütle Std Sapma (σ): " + Math.sqrt(varyansAnakutle).toFixed(4)  + "\n\n";
+        result +="Örneklem Varyansı (S²): " + varyansOrneklem.toFixed(4)  + "\n";
+        result +="Örneklem Std Sapma (S): " + Math.sqrt(varyansOrneklem).toFixed(4)  + "\n\n";
+        result +="Sıralı veri değerleri: \n";
+        result += "----------------------\n";
+        result += veriDizisi + "\n";
+        document.getElementById("resultOutput").value = result;
+    }
+</script>
+
+</body>
+</html>
