@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="initial-scale=1, width=device-width" http-equiv="Content-Type" content="text/html, charset=utf-8" />
+    <title>İstatistik Hesaplama Prof.Dr. Muhsin ÖZDEMİR</title>
+</head>
+<body style="font-family: Arial, sans-serif;margin: 10px; font-size: 12px;text-align:center;">
+<div style="border: 3px solid darkblue;  background:white;width: 100%; field-sizing: content;border-radius: 0.75em;">
+<h3>Sınıflanmış/Gruplandırılmış Serinin Merkezi Eğilim ve Dağılım Ölçüleri Hesaplayıcısı</h3>
+<p style="color:darkblue;">Veriyi AltLimit, ÜstLimit, Frekans olarak giriniz. Ondalık ayracı olarak nokta kullanılmalıdır. Sayıları virgül, noktalı virgül, boşluk veya alt satır ile ayırınız. <span style="background-color:lightgray; color:blue; cursor:pointer;" onclick="document.getElementById('dataInput').value='-39.95  -19.95   2 \n-19.95    0.05   8 \n  0.05   20.05  11 \n 20.05   40.05   7\n 40.05   60.05   2';">Örnek veri için tıklayınız.</span></p>
+
+<h3>Veri Girişi</h3>
+
+<textarea id="dataInput" style="width: 290px; min-height: 60px;field-sizing: content;border-radius: 0.65em; resize:none;" placeholder="Veriyi AltLimit, ÜstLimit, Frekans olarak giriniz. Ondalık ayracı nokta kullanılmalıdır. Veri değerlerini virgül, noktalı virgül, boşluk veya alt satır ile ayırarak giriniz"></textarea>
+<br>
+<button style="  font-size: 14px; color:green;border-radius: 0.65em;" onclick=" if (document.getElementById('dataInput').value!='' || silinenSonveri!='') { document.getElementById('dataInput').value=silinenSonveri;}">&#8630; &nbsp;Geri Al </button>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<button style="  font-size: 14px; color:red;border-radius: 0.65em;" onclick="if (document.getElementById('dataInput').value!='')silinenSonveri=document.getElementById('dataInput').value; document.getElementById('dataInput').value=''; document.getElementById('resultOutput').value=' ';">Veri Sil&nbsp;&#10008;</button>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<button style=" font-size: 14px; color:blue; font-weight:600;border-radius: 0.65em;" onclick="hesapla();  silinenSonveri=document.getElementById('dataInput').value;">Hesapla&nbsp; &#10004;</button>
+<br><br>
+<textarea id="resultOutput" style="width: 290px; margin-bottom: 10px; field-sizing: content; border-radius: 0.65em;" readonly></textarea>
+</div>
+<script>
+//-----------------------------------------------------------//
+//-- Sınıflanmış/Gruplandırılmış Serinin                   --// 
+//-- Merkezi Eğilim ve Dağılım Ölçüleri Hesaplayıcısı      --//
+//-- Written by Muhsin ÖZDEMİR                             --//
+//-- Bahar 2026 Dönemi YBS215 - İstatistik dersi           --//
+//-- için yazılmıştır                                      --//
+//-- 28 Şubat 2026                                         --//
+//-----------------------------------------------------------//
+
+var silinenSonveri='';
+
+// Veriyi temizler, sayılara çevirir ve dizi formatına getirir
+function veriTemizleme() {
+	let input = document.getElementById("dataInput").value; 
+	let grupveri=[];
+	grupveri.length=0;
+	input= input.trim();
+	input= input.replace(/\s/g,',');
+	input= input.replace(/;/g,',');
+	let i;
+	for ( i = 0; i < 10; i++)
+		input=input.replace(/,,/g,',');
+	if ( input.charAt(input.length-1)==',')
+		input=input.slice(0,input.length-1);
+	if ( input.charAt(0)==',')
+		input=input.slice(1,input.length);
+	let numbers = input.split(/,/).map(Number).filter(n => !isNaN(n));
+	if (numbers.length === 0 || input==='') {
+		document.getElementById("resultOutput").value ="Lütfen sayıları giriniz.";
+		return;
+	}
+	if (numbers.length%3 != 0 ) {
+		document.getElementById("resultOutput").value ="Dikkat..!\nHatalı veri girişi yaptınız!";
+		return;
+	}
+	
+	for ( i = 0; i < numbers.length; i=3+i++)
+		grupveri.push([numbers[i],numbers[i+1],numbers[i+2]]);
+	return grupveri;
+ }
+
+// Aritmetik ortalama hesaplar 
+function ortalamaf(grupveri){
+	let i, ortalama=0.0;
+	let K=grupveri.length; // Sınıf sayısı
+	let N=0; //veri sayısı
+	for (i=0;i<K;i++) N += grupveri[i][2];
+	
+	for (i=0;i<K;i++) 
+		ortalama += (grupveri[i][1]+grupveri[i][0])/2*grupveri[i][2]/N;	
+	return ortalama;
+}
+
+// Medyan (ortanca) değeri hesaplar 
+function medyanf(grupveri){
+	let medyan, medyanValue,i,j;
+	let N=0; //veri sayısı
+	let K=grupveri.length; // Sınıf sayısı
+	for (i=0;i<K;i++) N += grupveri[i][2];
+	let bfrekans=0; // birikimli frekans
+	let medyanPozisyon=parseInt((N+1)/2);
+	for (i = 0; i < K; i=i+1) {
+		bfrekans=bfrekans+grupveri[i][2];
+		if(medyanPozisyon==bfrekans && (N+1)%2==1){
+			medyan=i;
+			medyanValue=((grupveri[medyan][0]+(grupveri[medyan][2]-0.5)
+			*(grupveri[medyan][1]-grupveri[medyan][0])/grupveri[medyan][2])
+			+(grupveri[medyan+1][0]+(1-0.5)
+			*(grupveri[medyan+1][1]-grupveri[medyan+1][0])
+			/grupveri[medyan+1][2]))/2;
+		}
+		else if((medyanPozisyon==bfrekans && (N+1)%2==0)){
+			medyan=i;
+			medyanValue=(grupveri[medyan][0]+(grupveri[medyan][2]-0.5)
+			*(grupveri[medyan][1]-grupveri[medyan][0])/grupveri[medyan][2]);		
+		}
+		else if (medyanPozisyon>bfrekans && medyanPozisyon<(bfrekans+grupveri[i+1][2])){
+			medyan=i+1;	
+			if((N+1)%2==1){
+				j=medyanPozisyon-bfrekans;
+				medyanValue=((grupveri[medyan][0]+(j-0.5)
+				*(grupveri[medyan][1]-grupveri[medyan][0])/grupveri[medyan][2])
+				+(grupveri[medyan][0]+(j+1-0.5)*(grupveri[medyan][1]-grupveri[medyan][0])
+				/grupveri[medyan][2]))/2;
+			}else{
+				j=medyanPozisyon-bfrekans;
+				medyanValue=grupveri[medyan][0]+(j-0.5)
+				*(grupveri[medyan][1]-grupveri[medyan][0])/grupveri[medyan][2];
+			}
+		}
+	}	
+	return medyanValue;
+}
+
+// Mod (en sık) değeri hesaplar
+function modf(grupveri){
+	let mod=[];
+	mod.length=0;
+	let i,j, modValue;	
+	let n=grupveri.length;	
+	let frekans = grupveri.map(x=>x[2]);
+	frekans.unshift(0);//birinci pozisyona sıfır ekle
+	frekans.push(0);//sonuncu pozisyona sıfır ekle
+	let maxFrekans = Math.max(...frekans);
+	for (i=0;i<n;i++){
+		if(maxFrekans==grupveri[i][2]){
+			modValue= grupveri[i][0]+(grupveri[i][1]-grupveri[i][0])
+			*((frekans[i+1]-frekans[i])/
+			(frekans[i+1]-frekans[i]+frekans[i+1]-frekans[i+2]));
+			mod.push(modValue);	
+		}
+	}
+	return(mod);
+}
+
+// Varyans hesaplar 
+// tercih=1 anakütle için, tercih=0 örneklem için 
+function varyansf(grupveri, ortalama, tercih){
+	let i, varyans=0.0;
+	let K=grupveri.length; // Sınıf sayısı
+	let N=0; //veri sayısı
+	let ortaNokta;
+	for (i=0;i<K;i++) N += grupveri[i][2];
+	
+	for (i=0;i<K;i++){
+		ortaNokta=(grupveri[i][1]+grupveri[i][0])/2;
+		if(tercih)
+			varyans += (ortaNokta-ortalama)*(ortaNokta-ortalama)*grupveri[i][2]/N;
+		else
+			varyans += (ortaNokta-ortalama)*(ortaNokta-ortalama)*grupveri[i][2]/(N-1);
+	}		
+	return varyans;
+}
+
+//  Sınıflanmamış/Gruplandırılmış Serinin Merkezi Eğilim ve Dağılım Ölçülerini hesaplar 
+function hesapla() {
+	let i; //döngü indisi
+	let grupDizisi=veriTemizleme();
+	let K =grupDizisi.length;// Sınıf sayısı
+	let N=0; // veri sayısı (frekanslar toplamı)
+	for (i=0;i<K;i++) N += grupDizisi[i][2];	
+	let ortalama = ortalamaf(grupDizisi);
+	let medyan=medyanf(grupDizisi);
+	let mod=modf(grupDizisi);
+	let varyansAnakutle=varyansf(grupDizisi, ortalama, 1);
+	let varyansOrneklem=varyansf(grupDizisi, ortalama, 0);
+	
+	let result ="";
+	
+	result +="Sınıf sayısı (K): " + K + "\n";
+	result +="Veri sayısı  (N): " + N + "\n\n";
+	result += "Merkezi Eğilim Ölçüleri\n";
+	result += "----------------------\n";
+	result +="Aritmetik Ortalama (µ) (X̄) : " + ortalama.toFixed(4) + "\n";
+	result +="Medyan (Ortanca) : " + medyan.toFixed(4) + "\n";
+	result +=mod.length+" tane Mod var: " + mod + "\n";
+	result += "\nDağılım (Değişkenlik) Ölçüleri\n";
+	result +=     "----------------------\n";
+	result +="Anakütle Varyansı (σ²): " + varyansAnakutle.toFixed(4)  + "\n";
+	result +="Anakütle Std Sapma (σ): " + Math.sqrt(varyansAnakutle).toFixed(4)  + "\n\n";
+	result +="Örneklem Varyansı (S²): " + varyansOrneklem.toFixed(4)  + "\n";
+	result +="Örneklem Std Sapma (S): " + Math.sqrt(varyansOrneklem).toFixed(4)  + "\n\n";
+	result +="Sınıflanmış veri değerleri: \n";  
+	result += "----------------------\n"; 
+	result += "AltLimit, ÜstLimit, Frekans\n"; 
+	result += JSON.stringify(grupDizisi).replace(/],\[/g,'],\n ['); + "\n";
+	document.getElementById("resultOutput").value = result;
+}
+</script>
+
+</body>
+</html>  
