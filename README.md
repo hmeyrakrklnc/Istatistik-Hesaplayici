@@ -1,4 +1,4 @@
-Bu kod, tarayıcıda çalışan bir Merkezi Eğilim ve Dağılım Ölçüleri Hesaplayıcısıdır.
+Bu kod, tarayıcıda çalışan (Sınıflanmamış/Gruplandırılmamış) serilerin merkezi eğilim ve dağılım ölçülerini hesaplayan bir istatiksel hesap makinesidir.
 
 Amaç:
 Kullanıcının girdiği sayısal veriler üzerinden temel istatistik ölçülerini otomatik olarak hesaplamaktır.
