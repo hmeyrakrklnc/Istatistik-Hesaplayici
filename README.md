@@ -72,6 +72,9 @@ Bu program hesap makinesi değil,
 istatistik hesaplayıcısıdır.
 
 Yani:
-
 ❌ 2+3 gibi matematiksel işlem yapmaz
 ✅ Sadece hazır sayı listesini analiz eder
+
+Kodun tarayıcıdaki halini aşağadaki linkten görüntüleyebilirsiniz;
+
+https://hmeyrakrklnc.github.io/Istatistik-Hesaplayici/
