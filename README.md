@@ -1,80 +1,39 @@
-Bu kod, tarayıcıda çalışan (Sınıflanmamış/Gruplandırılmamış) serilerin merkezi eğilim ve dağılım ölçülerini hesaplayan bir istatiksel hesap makinesidir.
+# 📊 İstatistiksel Hesaplama Portfolyosu
 
-Amaç:
-Kullanıcının girdiği sayısal veriler üzerinden temel istatistik ölçülerini otomatik olarak hesaplamaktır.
+Bu repo, farklı veri türleri için geliştirilmiş istatistiksel analiz araçlarını içerir.
 
-Programın Hesapladığı Ölçüler:
+---
 
-🔹 Merkezi Eğilim
+## 1️⃣ Sınıflanmamış Seri Hesaplayıcı
+**Dosya:** `index.html` (Ana dizin)
 
-Aritmetik Ortalama
+Bu araç, ham veri listeleri üzerinde işlem yapar. Herhangi bir gruplandırma olmayan basit seriler için uygundur.
 
-Medyan
+* **Veri Girişi:** `10, 15, 20, 25...` şeklinde düz liste.
+* **Özellikler:** Standart sapma, varyans ve merkezi eğilim ölçülerini doğrudan ham veri üzerinden hesaplar.
 
-Mod
+Canlı Uygulamayı Aç: https://hmeyrakrklnc.github.io/Istatistik-Hesaplayici/
 
-🔹 Dağılım Ölçüleri
+---
 
-Minimum
+## 2️⃣ Sınıflanmış (Gruplandırılmış) Seri Hesaplayıcı 
+**Klasör:** `/siniflanmis-seri`
 
-Maksimum
+Bu araç, belirli aralıklara ve frekanslara sahip tablolaştırılmış veriler için tasarlanmıştır.
 
-Aralık
+* **Veri Girişi:** `AltLimit ÜstLimit Frekans` (Örn: `10 20 5`)
+* **Hesaplama Mantığı:** Sınıf orta noktaları ($m_i$) ve frekans ağırlıklı formüller kullanılır.
+* **Öne Çıkan Özellik:** Çoklu mod (multimodal) desteği ve doğrusal interpolasyon ile hassas medyan hesabı yapar.
 
-Alt Çeyrek (Q1)
+---
 
-Üst Çeyrek (Q3)
+## 🚀 Nasıl Kullanılır?
 
-IQR
+1. Kullanmak istediğiniz aracın sayfasına gidin.
+2. Verilerinizi belirtilen formatta kutucuğa yapıştırın.
+3. **Hesapla** butonuna basarak sonuçları 4 basamak hassasiyetle görüntüleyin.
 
-Ortalama Mutlak Sapma
-
-Anakütle Varyansı
-
-Anakütle Standart Sapma
-
-Örneklem Varyansı
-
-Örneklem Standart Sapma
-
-🎯 Programın Türü
-
-Bu program:
-
-📌 İstatistik dersi için hazırlanmış
-
-📌 Tarayıcıda çalışan
-
-📌 JavaScript tabanlı
-
-📌 Basit seri (gruplandırılmamış veri) analiz aracı
-
-Yani küçük çaplı bir:
-
-📈 Mini İstatistik Hesap Makinesi
-
-🧠 Teknik Açıdan
-
-Frontend: HTML
-
-İşlem Motoru: JavaScript
-
-Harici kütüphane yok
-
-Tamamen client-side çalışır
-
-Veritabanı yok
-
-Sunucuya ihtiyaç duymaz
-
-⚠️DİKKAT!  
-Bu program hesap makinesi değil,
-istatistik hesaplayıcısıdır.
-
-Yani:
-❌ 2+3 gibi matematiksel işlem yapmaz
-✅ Sadece hazır sayı listesini analiz eder
-
-Kodun tarayıcıdaki halini aşağadaki linkten görüntüleyebilirsiniz;
-
-https://hmeyrakrklnc.github.io/Istatistik-Hesaplayici/
+## 🛠 Teknik Detaylar
+* **Dil:** Saf JavaScript (Vanilla JS)
+* **Arayüz:** Responsive HTML5 & CSS3
+* **Lisans:** Eğitim amaçlı açık kaynak.
